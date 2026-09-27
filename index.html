@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мульти-Рандомайзер</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                        accent: '#6366f1',
+                        accentHover: '#4f46e5'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        @keyframes pulse-scale {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .animate-result {
+            animation: pulse-scale 0.4s ease-in-out;
+        }
+        /* Coin flip animation */
+        @keyframes flip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(900deg) scale(1.1); }
+            100% { transform: rotateY(1800deg); }
+        }
+        .coin-flipping {
+            animation: flip 1s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col justify-between selection:bg-accent selection:text-white">
+
+    <header class="w-full py-6 px-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-accent to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-dice text-white text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-wide">Рандомайзер.ру</h1>
+            </div>
+            <div class="text-sm text-slate-400 hidden sm:block">Быстро, честно, красиво</div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+        
+        <!-- Tabs Buttons -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8 bg-slate-900/80 p-2 rounded-2xl border border-slate-800 shadow-xl">
+            <button onclick="switchTab('number')" id="tab-number" class="tab-btn flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-300 bg-accent text-white shadow-lg shadow-accent/25">
+                <i class="fa-solid fa-hashtag"></i> Числа
+            </button>
+            <button onclick="switchTab('list')" id="tab-list" class="tab-btn flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-800/60">
+                <i class="fa-solid fa-list-ul"></i> Список
+            </button>
+            <button onclick="switchTab('coin')" id="tab-coin" class="tab-btn flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-300 text-slate-400 hover:text-white hover:bg-slate-800/60">
+                <i class="fa-solid fa-coins"></i> Монетка
+            </button>
+        </div>
+
+        <div class="bg-cardBg rounded-3xl border border-slate-800/80 p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+            
+            <!-- SECTION 1: Random Number Generator -->
+            <div id="section-number" class="tab-section space-y-6">
+                <div class="text-center max-w-md mx-auto">
+                    <h2 class="text-2xl font-bold mb-2">Генератор чисел</h2>
+                    <p class="text-slate-400 text-sm">Укажите диапазон, и система выберет случайное целое число.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">От</label>
+                        <input type="number" id="num-min" value="1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-center text-lg font-semibold focus:outline-none focus:border-accent transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">До</label>
+                        <input type="number" id="num-max" value="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-center text-lg font-semibold focus:outline-none focus:border-accent transition-colors">
+                    </div>
+                </div>
+
+                <!-- Result Display for Number -->
+                <div class="my-8 flex flex-col items-center justify-center">
+                    <div id="num-result" class="text-6xl sm:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-accent to-indigo-300 tracking-tight min-h-[1.2em] flex items-center justify-center">
+                        ?
+                    </div>
+                    <span class="text-xs uppercase tracking-widest text-slate-500 mt-2">Результат</span>
+                </div>
+
+                <div class="flex justify-center">
+                    <button onclick="generateNumber()" class="w-full max-w-xs bg-accent hover:bg-accentHover text-white font-semibold py-4 rounded-2xl shadow-xl shadow-accent/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Сгенерировать
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION 2: List Picker -->
+            <div id="section-list" class="tab-section hidden space-y-6">
+                <div class="text-center max-w-md mx-auto">
+                    <h2 class="text-2xl font-bold mb-2">Выбор из списка</h2>
+                    <p class="text-slate-400 text-sm">Введите элементы через запятую или каждый с новой строки.</p>
+                </div>
+
+                <div class="max-w-lg mx-auto">
+                    <textarea id="list-items" rows="4" placeholder="Яблоко, Банан, Апельсин, Груша&#10;Или каждый элемент&#10;на новой строке" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm focus:outline-none focus:border-accent transition-colors resize-y">Анна, Дмитрий, Алексей, Екатерина, Сергей</textarea>
+                </div>
+
+                <!-- Result Display for List -->
+                <div class="my-6 flex flex-col items-center justify-center">
+                    <div id="list-result" class="text-3xl sm:text-4xl font-bold text-center text-accent tracking-wide min-h-[1.5em] flex items-center justify-center px-4">
+                        Нажмите кнопку
+                    </div>
+                    <span class="text-xs uppercase tracking-widest text-slate-500 mt-2">Победитель / Элемент</span>
+                </div>
+
+                <div class="flex justify-center">
+                    <button onclick="generateListItem()" class="w-full max-w-xs bg-accent hover:bg-accentHover text-white font-semibold py-4 rounded-2xl shadow-xl shadow-accent/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Выбрать случайный
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Coin Flip -->
+            <div id="section-coin" class="tab-section hidden space-y-6">
+                <div class="text-center max-w-md mx-auto">
+                    <h2 class="text-2xl font-bold mb-2">Подбросить монетку</h2>
+                    <p class="text-slate-400 text-sm">Классический выбор между орлом и решкой.</p>
+                </div>
+
+                <!-- Coin Container -->
+                <div class="my-8 flex flex-col items-center justify-center h-40">
+                    <div id="coin" class="w-28 h-28 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-2xl shadow-amber-500/20 border-4 border-amber-200 text-slate-900 font-extrabold text-xl transition-transform duration-1000 select-none">
+                        <span id="coin-text">ОРЕЛ</span>
+                    </div>
+                    <div id="coin-result" class="text-lg font-medium text-slate-400 mt-4 h-6">Готово к броску</div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button id="coin-btn" onclick="flipCoin()" class="w-full max-w-xs bg-accent hover:bg-accentHover text-white font-semibold py-4 rounded-2xl shadow-xl shadow-accent/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-coins"></i> Подбросить
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="w-full py-6 text-center text-xs text-slate-500 border-t border-slate-800/60">
+        <p>&copy; 2026 Мульти-Рандомайзер. Быстро и удобно.</p>
+    </footer>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-accent', 'text-white', 'shadow-lg', 'shadow-accent/25');
+                btn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
+            });
+
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800/60');
+            activeBtn.classList.add('bg-accent', 'text-white', 'shadow-lg', 'shadow-accent/25');
+        }
+
+        // 1. Random Number Logic
+        function generateNumber() {
+            let min = parseInt(document.getElementById('num-min').value);
+            let max = parseInt(document.getElementById('num-max').value);
+
+            if (isNaN(min) || isNaN(max)) {
+                min = 1;
+                max = 100;
+            }
+            if (min > max) {
+                let temp = min;
+                min = max;
+                max = temp;
+                document.getElementById('num-min').value = min;
+                document.getElementById('num-max').value = max;
+            }
+
+            const resultEl = document.getElementById('num-result');
+            
+            // Quick rolling effect simulation
+            let counter = 0;
+            const rollInterval = setInterval(() => {
+                let tempVal = Math.floor(Math.random() * (max - min + 1)) + min;
+                resultEl.innerText = tempVal;
+                counter++;
+                if (counter > 8) {
+                    clearInterval(rollInterval);
+                    const finalVal = Math.floor(Math.random() * (max - min + 1)) + min;
+                    resultEl.innerText = finalVal;
+                    resultEl.classList.remove('animate-result');
+                    void resultEl.offsetWidth; // trigger reflow
+                    resultEl.classList.add('animate-result');
+                }
+            }, 50);
+        }
+
+        // 2. List Item Picker Logic
+        function generateListItem() {
+            const rawText = document.getElementById('list-items').value;
+            // Split by comma or newlines, filter empty items and trim whitespaces
+            const items = rawText.split(/,|\n/).map(i => i.trim()).filter(i => i.length > 0);
+            
+            const resultEl = document.getElementById('list-result');
+
+            if (items.length === 0) {
+                resultEl.innerText = 'Список пуст!';
+                return;
+            }
+
+            // Shuffle animation look
+            let counter = 0;
+            const rollInterval = setInterval(() => {
+                let randomIdx = Math.floor(Math.random() * items.length);
+                resultEl.innerText = items[randomIdx];
+                counter++;
+                if (counter > 10) {
+                    clearInterval(rollInterval);
+                    const finalIdx = Math.floor(Math.random() * items.length);
+                    resultEl.innerText = items[finalIdx];
+                    resultEl.classList.remove('animate-result');
+                    void resultEl.offsetWidth;
+                    resultEl.classList.add('animate-result');
+                }
+            }, 40);
+        }
+
+        // 3. Coin Flip Logic
+        let isFlipping = false;
+        function flipCoin() {
+            if (isFlipping) return;
+            isFlipping = true;
+
+            const coin = document.getElementById('coin');
+            const coinText = document.getElementById('coin-text');
+            const coinResult = document.getElementById('coin-result');
+            const coinBtn = document.getElementById('coin-btn');
+
+            coinBtn.disabled = true;
+            coinBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            coinResult.innerText = 'Монетка летит...';
+
+            coin.classList.add('coin-flipping');
+
+            setTimeout(() => {
+                const isHead = Math.random() < 0.5;
+                if (isHead) {
+                    coinText.innerText = 'ОРЕЛ';
+                    coinResult.innerText = 'Выпал Орел!';
+                } else {
+                    coinText.innerText = 'РЕШКА';
+                    coinResult.innerText = 'Выпала Решка!';
+                }
+
+                coin.classList.remove('coin-flipping');
+                coinBtn.disabled = false;
+                coinBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                isFlipping = false;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
